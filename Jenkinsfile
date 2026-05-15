@@ -18,7 +18,6 @@ pipeline {
             steps {
                 script {
                     echo 'Building Java App and Docker Image...'
-                    // Changed 'sh' to 'bat' for Windows
                     bat "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
@@ -28,9 +27,11 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying the Spring Boot full-stack application...'
-                    // Changed 'sh' to 'bat' and fixed the error handling for Windows
-                    bat "docker stop ${CONTAINER_NAME} || echo 'No container to stop'"
-                    bat "docker rm ${CONTAINER_NAME} || echo 'No container to remove'"
+
+                    // Safely try to stop and remove old containers without crashing the pipeline
+                    bat returnStatus: true, script: "docker stop ${CONTAINER_NAME}"
+                    bat returnStatus: true, script: "docker rm ${CONTAINER_NAME}"
+
                     // Run the new container on port 8081
                     bat "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                 }
