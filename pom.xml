@@ -9,11 +9,11 @@
 		<version>2.7.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.bezkoder</groupId>
-	<artifactId>spring-boot-thymeleaf-example</artifactId>
+	<groupId>com.javadevops</groupId>
+	<artifactId>java-devops-tutorials</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-boot-thymeleaf-example</name>
-	<description>Spring Boot Thymeleaf example - CRUD with Bootstrap</description>
+	<name>java-devops-tutorials</name>
+	<description>Java DevOps Tutorial Management System - Spring Boot Thymeleaf CRUD with Bootstrap</description>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -73,6 +73,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.javadevops.tutorials.JavaDevopsApplication</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

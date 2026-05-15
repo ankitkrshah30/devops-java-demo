@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+  <title>Java DevOps - Welcome</title>
+
+  <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <style>
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+    }
+
+    .dashboard {
+      margin: 50px 0;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      text-align: center;
+      margin: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .features {
+      background: #f8f9fa;
+      padding: 60px 20px;
+      margin: 40px 0;
+    }
+
+    .feature-item {
+      margin: 20px 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    .btn-hero {
+      background: white;
+      color: #667eea;
+      padding: 12px 40px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-hero:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <div th:replace="fragments/header :: header"></div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1><i class="fas fa-rocket"></i> Java DevOps</h1>
+    <p>Professional Tutorial Management System</p>
+    <a th:href="@{/tutorials}" class="btn btn-hero">
+      <i class="fas fa-book"></i> View Tutorials
+    </a>
+    <a th:href="@{/tutorials/new}" class="btn btn-hero">
+      <i class="fas fa-plus"></i> Create Tutorial
+    </a>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div class="dashboard">
+    <h2 class="text-center mb-5">Dashboard</h2>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">[[${totalTutorials}]]</div>
+            <div class="stat-label">
+              <i class="fas fa-book-open"></i> Total Tutorials
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">[[${publishedTutorials}]]</div>
+            <div class="stat-label">
+              <i class="fas fa-check-circle"></i> Published
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">[[${unpublishedTutorials}]]</div>
+            <div class="stat-label">
+              <i class="fas fa-hourglass"></i> Drafts
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="features">
+    <div class="container">
+      <h2 class="text-center mb-5">Features</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-plus-circle"></i>
+            </div>
+            <h5>Create</h5>
+            <p>Easily create and manage tutorials</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-edit"></i>
+            </div>
+            <h5>Edit</h5>
+            <p>Update tutorial content anytime</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-trash"></i>
+            </div>
+            <h5>Delete</h5>
+            <p>Remove tutorials with ease</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <h5>Search</h5>
+            <p>Find tutorials quickly</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="fragments/footer :: footer"></div>
+</body>
+
+</html>
+

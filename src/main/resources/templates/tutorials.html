@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-  <title>BezKoder - Spring Boot Thymeleaf example</title>
+  <title>Java DevOps - Tutorial Management System</title>
 
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
@@ -13,13 +13,146 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
   <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+  <style>
+    .tutorial-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      padding: 20px;
+      border-left: 4px solid #667eea;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .tutorial-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .tutorial-title {
+      color: #333;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .tutorial-meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .tutorial-description {
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .tutorial-content-preview {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      max-height: 100px;
+      overflow: hidden;
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .badge-level {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .level-1 {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .level-2 {
+      background: #cfe2ff;
+      color: #084298;
+    }
+
+    .level-3 {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    .level-4 {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    .badge-category {
+      background: #667eea;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      margin-right: 5px;
+    }
+
+    .tutorial-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-view {
+      color: #667eea;
+      border: 1px solid #667eea;
+    }
+
+    .btn-view:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-edit {
+      color: #0066cc;
+      border: 1px solid #0066cc;
+    }
+
+    .btn-edit:hover {
+      background: #0066cc;
+      color: white;
+    }
+
+    .btn-delete {
+      color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+
+    .btn-delete:hover {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
   <div th:replace="fragments/header :: header"></div>
 
   <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
-    <h2 class="text-center">Tutorials</h2>
+    <h2 class="text-center mt-4 mb-4">DevOps Tutorials Library</h2>
 
     <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
       role="alert">
@@ -36,58 +169,106 @@
             <div class="search">
               <i class="fa fa-search"></i>
               <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
-                placeholder="Enter keyword">
+                placeholder="Search tutorials by title or description">
               <button type="submit" class="btn btn-secondary">Search</button>
             </div>
           </div>
           <div class="col-md-6 mt-2">
-            <button id="btnClear" class="btn btn-info">Clear</button>
+            <a href="/tutorials/new" class="btn btn-success float-right">
+              <i class="fas fa-plus"></i> Create New Tutorial
+            </a>
+            <button id="btnClear" class="btn btn-info">
+              <i class="fas fa-times"></i> Clear
+            </button>
           </div>
         </div>
       </form>
     </div>
 
+    <!-- Tutorials List as Cards -->
     <div th:if="${tutorials.size() > 0}">
-      <table class="table table-hover table-responsive-xl">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Title</th>
-            <th scope="col">Description</th>
-            <th scope="col">Level</th>
-            <th scope="col">Published</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="tutorial : ${tutorials}">
-            <th scope="row">[[${tutorial.id}]]</th>
-            <td>[[${tutorial.title}]]</td>
-            <td>[[${tutorial.description}]]</td>
-            <td>[[${tutorial.level}]]</td>
-            <td>
-              <a th:if="${tutorial.published == true}" class="fa-regular fa-square-check"
-                th:href="@{'/tutorials/' + ${tutorial.id} + '/published/false'}" title="Disable this tutorial"></a>
-              <a th:if="${tutorial.published == false}" class="fa-regular fa-square icon-dark"
-                th:href="@{'/tutorials/' + ${tutorial.id} + '/published/true'}" title="Enable this tutorial"></a>
-            </td>
-            <td>
-              <a th:href="@{'/tutorials/' + ${tutorial.id}}" title="Edit this tutorial"
-                class="fa-regular fa-pen-to-square icon-dark"></a>
-              &nbsp;
-              <a th:href="@{'/tutorials/delete/' + ${tutorial.id}}" th:tutorialTitle="${tutorial.title}" id="btnDelete"
-                title="Delete this tutorial" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div th:each="tutorial : ${tutorials}" class="tutorial-card">
+        <div class="row">
+          <div class="col-md-9">
+            <!-- Tutorial Header -->
+            <h4 class="tutorial-title">
+              <i class="fas fa-book"></i> [[${tutorial.title}]]
+            </h4>
+
+            <!-- Meta Information -->
+            <div class="tutorial-meta">
+              <span class="badge-level" th:class="'badge-level level-' + ${tutorial.level}">
+                Level [[${tutorial.level}]]
+              </span>
+              <span th:if="${tutorial.category}" class="badge-category">
+                <i class="fas fa-folder"></i> [[${tutorial.category}]]
+              </span>
+              <span th:if="${tutorial.author}">
+                <i class="fas fa-user"></i> By: [[${tutorial.author}]]
+              </span>
+            </div>
+
+            <!-- Description -->
+            <p class="tutorial-description" th:if="${tutorial.description}">
+              [[${tutorial.description}]]
+            </p>
+
+            <!-- Content Preview -->
+            <div th:if="${tutorial.content != null and !tutorial.content.isEmpty()}" class="tutorial-content-preview">
+              <strong>Content Preview:</strong><br>
+              <span th:utext="${#strings.abbreviate(tutorial.content, 150)}"></span>
+            </div>
+
+            <!-- Tags -->
+            <div th:if="${tutorial.tags != null and !tutorial.tags.isEmpty()}">
+              <small class="text-muted">
+                <i class="fas fa-tags"></i>
+                <span th:each="tag : ${#strings.listSplit(tutorial.tags, ',')}" class="badge badge-secondary mr-1">
+                  [[${#strings.trim(tag)}]]
+                </span>
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-3 text-right">
+            <!-- Actions -->
+            <div class="tutorial-actions justify-content-end">
+              <!-- Edit -->
+              <a th:href="@{'/tutorials/' + ${tutorial.id}}" class="btn-action btn-edit" title="Edit tutorial">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+
+              <!-- Toggle Publish -->
+              <a th:if="${tutorial.published == true}" class="btn-action"
+                th:href="@{'/tutorials/' + ${tutorial.id} + '/published/false'}"
+                title="Unpublish tutorial" style="color: #28a745; border: 1px solid #28a745;">
+                <i class="fas fa-check-circle"></i> Published
+              </a>
+              <a th:if="${tutorial.published == false}" class="btn-action"
+                th:href="@{'/tutorials/' + ${tutorial.id} + '/published/true'}"
+                title="Publish tutorial" style="color: #dc3545; border: 1px solid #dc3545;">
+                <i class="fas fa-ban"></i> Draft
+              </a>
+
+              <!-- Delete -->
+              <a th:href="@{'/tutorials/delete/' + ${tutorial.id}}" th:tutorialTitle="${tutorial.title}"
+                class="btn-action btn-delete btn-delete-trigger" title="Delete this tutorial">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="" th:unless="${tutorials.size() > 0}">
-      <span>No tutorials found!</span>
+    <div th:unless="${tutorials.size() > 0}">
+      <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle"></i> No tutorials found. <a href="/tutorials/new"><strong>Create one now!</strong></a>
+      </div>
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
   <div class="modal fade text-center" id="confirmModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -103,8 +284,12 @@
         </div>
 
         <div class="modal-footer">
-          <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <a type="button" id="yesBtn" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Yes, Delete
+          </a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fas fa-times"></i> Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -114,19 +299,21 @@
 
   <script type="text/javascript">
     $(document).ready(function () {
-      $(".btn-delete").on("click", function (e) {
+      // Delete confirmation
+      $(".btn-delete-trigger").on("click", function (e) {
         e.preventDefault();
-        link = $(this);
+        const link = $(this);
+        const tutorialTitle = link.attr("tutorialTitle");
 
-        tutorialTitle = link.attr("tutorialTitle");
         $("#yesBtn").attr("href", link.attr("href"));
-        $("#confirmText").html("Do you want to delete the Tutorial \<strong\>" + tutorialTitle + "\<\/strong\>?");
+        $("#confirmText").html("Are you sure you want to delete the Tutorial <strong>" + tutorialTitle + "</strong>?");
         $("#confirmModal").modal();
       });
 
+      // Clear search
       $("#btnClear").on("click", function (e) {
         e.preventDefault();
-        $("#keyword").text("");
+        $("#keyword").val("");
         window.location = "[[@{/tutorials}]]";
       });
     });
@@ -135,3 +322,4 @@
 </body>
 
 </html>
+

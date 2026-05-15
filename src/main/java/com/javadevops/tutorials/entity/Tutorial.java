@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.entity;
+package com.javadevops.tutorials.entity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -67,6 +67,8 @@ public class Tutorial {
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
+
+  // ... existing code ...
 
   public Integer getId() {
     return id;
@@ -171,5 +173,4 @@ public class Tutorial {
   }
 
 }
-
 

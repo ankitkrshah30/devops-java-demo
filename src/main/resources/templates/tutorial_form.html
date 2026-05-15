@@ -4,62 +4,385 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-  <title>BezKoder - Spring Boot Thymeleaf example</title>
+  <title>Java DevOps - Tutorial Management System</title>
 
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
   <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+  <!-- Summernote Rich Text Editor -->
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+  <style>
+    .nav-tabs .nav-link {
+      cursor: pointer;
+      color: #667eea;
+      border-bottom: 2px solid transparent;
+      margin-right: 10px;
+      font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.active {
+      color: #764ba2;
+      border-bottom: 2px solid #667eea;
+      background: none;
+    }
+
+    .tab-content {
+      margin-top: 20px;
+    }
+
+    .form-section {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      color: #667eea;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+      padding-left: 15px;
+    }
+
+    .icon-input {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .icon-input i {
+      color: #667eea;
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .note-editor {
+      border-radius: 5px !important;
+      border: 1px solid #ddd !important;
+    }
+
+    .btn-primary, .btn-success {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 5px;
+      padding: 10px 25px;
+      font-weight: 600;
+      transition: transform 0.2s;
+      margin-right: 10px;
+    }
+
+    .btn-primary:hover, .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 25px;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .form-label {
+      color: #333;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 12px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      color: #1565c0;
+    }
+
+    .badge-info {
+      background: #667eea;
+      padding: 5px 10px;
+      border-radius: 20px;
+      color: white;
+      font-size: 0.85rem;
+      margin-right: 5px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .reference-link-item {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      border-left: 3px solid #667eea;
+    }
+
+    .char-count {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 
 <body>
   <div th:replace="fragments/header :: header"></div>
 
   <div class="container-fluid">
-    <h2 class="text-center">[[${pageTitle}]]</h2>
+    <h2 class="text-center mt-4 mb-4">[[${pageTitle}]]</h2>
 
     <div class="my-3">
       <form th:action="@{/tutorials/save}" method="post" enctype="multipart/form-data" th:object="${tutorial}"
-        style="max-width: 550px; margin: 0 auto">
+        style="max-width: 1200px; margin: 0 auto">
 
         <input type="hidden" th:field="*{id}" />
 
-        <div class="p-3">
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="title">Title</label>
-            <div class="col-sm-9">
-              <input type="text" th:field="*{title}" required minlength="2" maxlength="128" class="form-control"
-                id="title" />
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" href="#basic" data-toggle="tab" role="tab">
+              <i class="fas fa-align-left"></i> Basic Info
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contentTab" data-toggle="tab" role="tab">
+              <i class="fas fa-pen-fancy"></i> Content & Rich Text
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#references" data-toggle="tab" role="tab">
+              <i class="fas fa-link"></i> References & Resources
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#metadata" data-toggle="tab" role="tab">
+              <i class="fas fa-tag"></i> Metadata
+            </a>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+
+          <!-- BASIC INFO TAB -->
+          <div id="basic" class="tab-pane fade show active" role="tabpanel">
+            <div class="form-section">
+              <h4 class="section-title">
+                <i class="fas fa-info-circle"></i> Tutorial Basic Information
+              </h4>
+
+              <div class="info-box">
+                <i class="fas fa-lightbulb"></i> Fill in the basic details about your tutorial. Make it clear and
+                descriptive!
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="title">
+                  <i class="fas fa-book"></i> Tutorial Title
+                  <span class="badge-info">Required</span>
+                </label>
+                <input type="text" th:field="*{title}" required minlength="2" maxlength="128" class="form-control"
+                  id="title" placeholder="e.g., Introduction to Docker on CI/CD Pipeline" />
+                <small class="form-text text-muted">Brief, descriptive title for your tutorial (2-128 characters)</small>
+                <div class="char-count"><span id="titleCount">0</span>/128 characters</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="description">
+                  <i class="fas fa-align-left"></i> Short Description
+                </label>
+                <input type="text" th:field="*{description}" minlength="2" maxlength="256" class="form-control"
+                  id="description" placeholder="Brief description of what students will learn" />
+                <small class="form-text text-muted">Quick summary (max 256 characters)</small>
+                <div class="char-count"><span id="descCount">0</span>/256 characters</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="level">
+                  <i class="fas fa-graduation-cap"></i> Difficulty Level
+                  <span class="badge-info">Required</span>
+                </label>
+                <select th:field="*{level}" required class="form-control" id="level">
+                  <option value="">-- Select Level --</option>
+                  <option value="1">1 - Beginner (Getting Started)</option>
+                  <option value="2">2 - Intermediate (Some Experience)</option>
+                  <option value="3">3 - Advanced (Experienced Users)</option>
+                  <option value="4">4 - Expert (Professional Level)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="author">
+                  <i class="fas fa-user"></i> Author Name
+                </label>
+                <input type="text" th:field="*{author}" maxlength="255" class="form-control" id="author"
+                  placeholder="Your name or institution" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="published">
+                  <i class="fas fa-check"></i> Publish This Tutorial
+                </label>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" th:field="*{published}" class="custom-control-input" id="published" />
+                  <label class="custom-control-label" for="published">
+                    Make this tutorial visible to students
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="description">Description</label>
-            <div class="col-sm-9">
-              <input type="text" th:field="*{description}" minlength="2" maxlength="256" class="form-control"
-                id="description" />
+          <!-- CONTENT TAB -->
+          <div id="contentTab" class="tab-pane fade" role="tabpanel">
+            <div class="form-section">
+              <h4 class="section-title">
+                <i class="fas fa-pen-fancy"></i> Tutorial Content with Rich Text Editor
+              </h4>
+
+              <div class="info-box">
+                <i class="fas fa-palette"></i> Use the rich text editor below to format your tutorial content.
+                You can add text, lists, code snippets, images, and more!
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="content">
+                  <i class="fas fa-file-alt"></i> Tutorial Content
+                </label>
+                <textarea th:field="*{content}" id="content" class="form-control"
+                  placeholder="Write your tutorial content here..."></textarea>
+                <small class="form-text text-muted">
+                  Supports: Bold, Italic, Lists, Code Blocks, Headings, Links, and more
+                </small>
+              </div>
+
+              <div class="mt-3">
+                <h6><i class="fas fa-info-circle"></i> Content Tips:</h6>
+                <ul>
+                  <li>Use <strong>Heading 2 or 3</strong> to organize sections</li>
+                  <li>Create <strong>bullet lists</strong> for steps</li>
+                  <li>Use <strong>code block</strong> for code snippets</li>
+                  <li>Add <strong>links</strong> to external resources</li>
+                  <li>Insert <strong>images</strong> to illustrate concepts</li>
+                  <li>Use <strong>blockquote</strong> for important notes</li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="level">Level</label>
-            <div class="col-sm-9">
-              <input type="number" step="1" th:field="*{level}" required min="1"
-                class="form-control" id="level" />
+          <!-- REFERENCES TAB -->
+          <div id="references" class="tab-pane fade" role="tabpanel">
+            <div class="form-section">
+              <h4 class="section-title">
+                <i class="fas fa-link"></i> References & Resources
+              </h4>
+
+              <div class="info-box">
+                <i class="fas fa-external-link-alt"></i> Add reference links and external resources that students
+                should check out
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="referenceLinks">
+                  <i class="fas fa-link"></i> Reference Links
+                </label>
+                <textarea th:field="*{referenceLinks}" id="referenceLinks" class="form-control"
+                  placeholder="Enter reference links (one per line):&#10;https://example.com/resource1&#10;https://example.com/resource2&#10;https://example.com/resource3"></textarea>
+                <small class="form-text text-muted">
+                  Enter one URL per line. Links to documentation, articles, videos, etc.
+                </small>
+              </div>
+
+              <div class="mt-4">
+                <h6><i class="fas fa-book"></i> Reference Examples:</h6>
+                <div class="reference-link-item">
+                  <strong>Official Documentation:</strong><br>
+                  https://docs.docker.com/
+                </div>
+                <div class="reference-link-item">
+                  <strong>Tutorial Website:</strong><br>
+                  https://www.tutorialspoint.com/
+                </div>
+                <div class="reference-link-item">
+                  <strong>Video Channel:</strong><br>
+                  https://www.youtube.com/
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="form-group row">
-            <label class="col-sm-3 form-check-label" for="published">Published</label>
-            <div class="col-sm-9">
-              <input type="checkbox" th:field="*{published}" />
+          <!-- METADATA TAB -->
+          <div id="metadata" class="tab-pane fade" role="tabpanel">
+            <div class="form-section">
+              <h4 class="section-title">
+                <i class="fas fa-tag"></i> Metadata & Organization
+              </h4>
+
+              <div class="info-box">
+                <i class="fas fa-folder"></i> Organize your tutorials with categories and tags for better
+                discoverability
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="category">
+                  <i class="fas fa-folder"></i> Category
+                </label>
+                <select th:field="*{category}" class="form-control" id="category">
+                  <option value="">-- Select Category --</option>
+                  <option value="docker">Docker & Containerization</option>
+                  <option value="kubernetes">Kubernetes Orchestration</option>
+                  <option value="ci-cd">CI/CD Pipelines</option>
+                  <option value="git">Git & Version Control</option>
+                  <option value="java">Java Development</option>
+                  <option value="spring">Spring Framework</option>
+                  <option value="database">Database Management</option>
+                  <option value="monitoring">Monitoring & Logging</option>
+                  <option value="security">Security & Compliance</option>
+                  <option value="cloud">Cloud Computing</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="tags">
+                  <i class="fas fa-tags"></i> Tags
+                </label>
+                <input type="text" th:field="*{tags}" maxlength="500" class="form-control" id="tags"
+                  placeholder="e.g., docker, devops, containers, linux, ci/cd (comma separated)" />
+                <small class="form-text text-muted">
+                  Add tags separated by commas to help students find your tutorial
+                </small>
+              </div>
             </div>
           </div>
 
-          <div class="text-center">
-            <input type="submit" value="Save" class="btn btn-primary btn-sm mr-2" />
-            <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />
-          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-section text-center">
+          <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+            <i class="fas fa-save"></i> Save Tutorial
+          </button>
+          <button type="button" class="btn btn-secondary btn-lg" id="btnCancel">
+            <i class="fas fa-times"></i> Cancel
+          </button>
         </div>
       </form>
     </div>
@@ -68,10 +391,61 @@
   <div th:replace="fragments/footer :: footer"></div>
 
   <script type="text/javascript">
+    // Initialize Summernote Editor
+    $(document).ready(function() {
+      $('#content').summernote({
+        height: 400,
+        placeholder: 'Write your tutorial content here...',
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+    });
+
     $(document).ready(function () {
+      // Form validation for tabs
+      $('form').on('submit', function(e) {
+        var invalid = $(this).find(':invalid').first();
+        if (invalid.length > 0) {
+          var tabPane = invalid.closest('.tab-pane');
+          if (tabPane.length > 0) {
+            var tabId = tabPane.attr('id');
+            $('.nav-tabs a[href="#' + tabId + '"]').tab('show');
+            setTimeout(function() { invalid.focus(); }, 200);
+          }
+        }
+      });
+
+      // Character count for title
+      $("#title").on("keyup", function () {
+        $("#titleCount").text($(this).val().length);
+      });
+
+      // Character count for description
+      $("#description").on("keyup", function () {
+        $("#descCount").text($(this).val().length);
+      });
+
+      // Cancel button
       $("#btnCancel").on("click", function () {
         window.location = "[[@{/tutorials}]]";
       });
+
+      // Bootstrap Tab functionality
+      $('[data-toggle="tab"]').on('click', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+
+      // Initialize character counts on page load
+      $("#titleCount").text($("#title").val().length);
+      $("#descCount").text($("#description").val().length);
     });
   </script>
 

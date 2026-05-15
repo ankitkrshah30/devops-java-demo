@@ -1,4 +1,4 @@
-package com.bezkoder.spring.thymeleaf.repository;
+package com.javadevops.tutorials.repository;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.bezkoder.spring.thymeleaf.entity.Tutorial;
+import com.javadevops.tutorials.entity.Tutorial;
 
 @Repository
 @Transactional
@@ -22,3 +22,5 @@ public interface TutorialRepository extends JpaRepository<Tutorial, Integer> {
   @Modifying
   public void updatePublishedStatus(Integer id, boolean published);
 }
+
+
