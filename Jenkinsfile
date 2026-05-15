@@ -31,8 +31,6 @@ pipeline {
                     // Changed 'sh' to 'bat' and fixed the error handling for Windows
                     bat "docker stop ${CONTAINER_NAME} || echo 'No container to stop'"
                     bat "docker rm ${CONTAINER_NAME} || echo 'No container to remove'"
-
-<<<<<<< HEAD
                     // Run the new container on port 8081
                     bat "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                 }
@@ -40,12 +38,3 @@ pipeline {
         }
     }
 }
-=======
-					// Run the new container on port 8080
-					sh "docker run -d -p 8081:8080 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-				}
-			}
-		}
-	}
-}
->>>>>>> 276dd398dbf3ab6dad098d37ffffb6faf7b049b3
