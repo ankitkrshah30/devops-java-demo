@@ -8,7 +8,8 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Package the application into a lightweight runtime container
-FROM openjdk:17-jdk-slim
+# CHANGED: Using Eclipse Temurin instead of the deprecated OpenJDK image
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 # Copy the compiled .jar file from the build stage
 COPY --from=build /app/target/spring-boot-thymeleaf-*.jar app.jar
